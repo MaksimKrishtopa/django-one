@@ -85,6 +85,8 @@ class BookInstance(models.Model):
         return '%s (%s)' % (self.id, self.book.title)
 
 
+
+
 class Author(models.Model):
     """
     Model representing an author.
