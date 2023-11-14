@@ -1,42 +1,25 @@
 from django.shortcuts import render
-
-# Create your views here.
-
 from .models import Book, Author, BookInstance, Genre
-
 from django.views import generic
 
 
 def index(request):
-    """
-    Функция отображения для домашней страницы сайта.
-    """
-    # Генерация "количеств" некоторых главных объектов
     num_books = Book.objects.all().count()
     num_instances = BookInstance.objects.all().count()
-    # Доступные книги (статус = 'a')
+
     num_instances_available = BookInstance.objects.filter(status__exact='a').count()
     num_authors = Author.objects.count()  # Метод 'all()' применён по умолчанию.
 
-    # Отрисовка HTML-шаблона index.html с данными внутри
-    # переменной контекста context
+    num_visits = request.session.get('num_visits', 0)
+    request.session['num_visits'] = num_visits + 1
+
     return render(
         request,
         'index.html',
         context={'num_books': num_books, 'num_instances': num_instances,
-                 'num_instances_available': num_instances_available, 'num_authors': num_authors},
+                 'num_instances_available': num_instances_available, 'num_authors': num_authors,
+                 'num_visits': num_visits},
     )
-
-
-class BookListView(generic.ListView):
-    model = Book
-    context_object_name = 'book_list'  # your own name for the list as a template variable
-    queryset = Book.objects.filter()[:5]  # Get 5 books containing the title war
-    template_name = 'books/my_arbitrary_template_name_list.html'  # Specify your own template name/location
-
-
-class BookDetailView(generic.DetailView):
-    model = Book
 
 
 class BookListView(generic.ListView):
@@ -44,10 +27,16 @@ class BookListView(generic.ListView):
     paginate_by = 1
 
 
+class BookDetailView(generic.DetailView):
+    model = Book
+
+
 class AuthorListView(generic.ListView):
+    """Generic class-based list view for a list of authors."""
     model = Author
-    paginate_by = 10
+    paginate_by = 1
 
 
 class AuthorDetailView(generic.DetailView):
+    """Generic class-based detail view for an author."""
     model = Author
