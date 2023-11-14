@@ -4,6 +4,8 @@ from django.shortcuts import render
 
 from .models import Book, Author, BookInstance, Genre
 
+from django.views import generic
+
 
 def index(request):
     """
@@ -24,3 +26,14 @@ def index(request):
         context={'num_books': num_books, 'num_instances': num_instances,
                  'num_instances_available': num_instances_available, 'num_authors': num_authors},
     )
+
+
+class BookListView(generic.ListView):
+    model = Book
+    context_object_name = 'book_list'   # your own name for the list as a template variable
+    queryset = Book.objects.filter()[:5] # Get 5 books containing the title war
+    template_name = 'books/my_arbitrary_template_name_list.html'  # Specify your own template name/location
+
+
+class BookDetailView(generic.DetailView):
+    model = Book
