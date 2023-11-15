@@ -126,3 +126,21 @@ class AllLoanedBooksListView(LoginRequiredMixin, PermissionRequiredMixin, generi
 
     def get_queryset(self):
         return BookInstance.objects.filter(status__exact='o').order_by('due_back')
+
+
+class BookCreate(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
+    model = Book
+    fields = '__all__'
+    permission_required = 'catalog.can_mark_returned'
+
+
+class BookUpdate(LoginRequiredMixin, PermissionRequiredMixin, UpdateView):
+    model = Book
+    fields = ['title', 'author', 'summary', 'isbn', 'genre']
+    permission_required = 'catalog.can_mark_returned'
+
+
+class BookDelete(LoginRequiredMixin, PermissionRequiredMixin, DeleteView):
+    model = Book
+    success_url = reverse_lazy('authors')
+    permission_required = 'catalog.can_mark_returned'
